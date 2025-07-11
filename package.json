@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "build": "npm run barrels && swc src --out-dir dist -s  --strip-leading-paths",
+    "build": "npm run barrels && swc src --out-dir dist -s  --strip-leading-paths && tsc-alias -p tsconfig.json",
     "barrels": "barrels",
     "start": "npm run barrels && nodemon src/index.ts",
     "start:prod": "cross-env NODE_ENV=production node --import @swc-node/register/esm-register src/index.js",
@@ -87,6 +87,7 @@
     "@types/passport-local": "^1.0.38",
     "@types/voca": "^1.4.6",
     "nodemon": "^3.1.10",
+    "tsc-alias": "^1.8.16",
     "tslib": "^2.8.1",
     "typeorm": "^0.3.25"
   },
