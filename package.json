@@ -6,7 +6,7 @@
     "build": "npm run barrels && swc src --out-dir dist -s  --strip-leading-paths && tsc-alias -p tsconfig.json",
     "barrels": "barrels",
     "start": "npm run barrels && nodemon src/index.ts",
-    "start:prod": "cross-env NODE_ENV=production node --import @swc-node/register/esm-register src/index.js",
+    "start:prod": "cross-env NODE_ENV=production node --import @swc-node/register/esm-register dist/index.js",
     "test": "npm run test:lint"
   },
   "dependencies": {

@@ -26,6 +26,5 @@
     "sourceMap": true,
     "noEmit": false,
     "outDir": "./dist",
-    "baseUrl": "./src",
   }
 }
