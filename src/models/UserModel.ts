@@ -1,0 +1,84 @@
+import {
+  CollectionOf,
+  Example,
+  Format,
+  Groups,
+  MaxLength,
+  MinLength,
+  Property,
+  Required,
+} from "@tsed/schema";
+import { Model, MongooseDocument, ObjectID, PreHook, Ref, Select, Unique } from "@tsed/mongoose";
+import bcrypt from "bcryptjs";
+import { Address } from "./AddressModel.js";
+
+@Model({
+  schemaOptions: {
+    timestamps: true,
+  },
+})
+@PreHook("save", async (user: MongooseDocument<User>, next: any) => {
+  if (user.isModified("password")) {
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(user.password, salt);
+  }
+
+  if (Array.isArray(user.address) && user.address.length === 0) {
+    user.set("address", undefined, { strict: false });
+  }
+
+  
+  next();
+})
+export class User {
+  @ObjectID("id")
+  @Property()
+  @Groups("!credentials")
+  _id: string;
+
+  @Groups("!credentials")
+  @Required()
+  @MinLength(3)
+  firstName: string;
+
+  @Groups("!credentials")
+  @Required()
+  @MaxLength(100)
+  lastName: string;
+
+  @Property()
+  @Required()
+  @Unique()
+  @Format("email")
+  @Example("admin@tsed.io")
+  email: string;
+
+  @Property()
+  role: "user" | "admin" = "user";
+
+  @MinLength(8)
+  // @Select(false)
+  @Groups("credentials")
+  password: string;
+
+  @Groups("token", "!credentials")
+  token: string;
+
+  @Groups("!credentials")
+  @Ref(() => Address)
+  @CollectionOf(() => Address)
+  address?: Ref<Address>[];
+
+  constructor(props: any) {
+    this._id = props.id;
+    this.email = props.email;
+    this.password = props.password;
+    this.firstName = props.firstName;
+    this.lastName = props.lastName;
+    this.token = props.token;
+  }
+
+  verifyPassword(password: string) {
+    return this.password === password;
+  }
+}
