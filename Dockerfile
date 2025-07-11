@@ -26,7 +26,8 @@ RUN npm ci
 
 COPY ./src ./src
 
-RUN npm run build
+# RUN npm run build
+RUN npx tsc && npx tsc-alias
 
 FROM node:${NODE_VERSION}-alpine AS runtime
 ENV WORKDIR /opt
@@ -35,7 +36,7 @@ WORKDIR $WORKDIR
 RUN apk update && apk add build-base git curl
 RUN npm install -g pm2
 
-COPY --from=build /opt .
+COPY --from=build /opt /opt
 
 RUN npm ci --omit=dev --ignore-scripts
 
@@ -45,6 +46,6 @@ EXPOSE 8081
 ENV PORT 8081
 ENV NODE_ENV production
 
-# CMD ["pm2-runtime", "start", "processes.config.cjs", "--env", "production"]
-RUN node dist/index.js
-CMD ["node", "dist/index.js"]
+CMD ["pm2-runtime", "start", "processes.config.cjs", "--env", "production"]
+# RUN node dist/index.js
+# CMD ["node", "dist/index.js"]
