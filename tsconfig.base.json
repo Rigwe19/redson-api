@@ -24,6 +24,8 @@
     "noResolve": false,
     "preserveConstEnums": true,
     "sourceMap": true,
-    "noEmit": true
+    "noEmit": false,
+    "outDir": "./dist",
+    "baseUrl": "./src",
   }
 }
