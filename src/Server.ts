@@ -6,7 +6,7 @@ import "@tsed/platform-log-request"; // remove this import if you don&#x27;t wan
 import "@tsed/platform-koa"; // /!\ keep this import
 import "@tsed/ajv";
 import "@tsed/swagger";
-import "@tsed/platform-multer/koa"
+import "@tsed/platform-multer/koa";
 import { config } from "./config/index.js";
 import * as rest from "./controllers/rest/index.js";
 import * as pages from "./controllers/pages/index.js";
@@ -55,7 +55,10 @@ import "./protocols/index.js";
     // })
   ],
   views: {
-    root: join(process.cwd(), "../views"),
+    root: join(
+      process.cwd(),
+      process.env.NODE_ENV === "production" ? "views" : "../views"
+    ),
     extensions: {
       ejs: "ejs",
     },

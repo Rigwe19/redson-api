@@ -26,6 +26,8 @@ RUN npm ci
 
 COPY ./src ./src
 
+COPY views ./views
+
 RUN npm run build
 # RUN npx tsc && npx tsc-alias
 
