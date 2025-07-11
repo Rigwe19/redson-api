@@ -26,8 +26,8 @@ RUN npm ci
 
 COPY ./src ./src
 
-# RUN npm run build
-RUN npx tsc && npx tsc-alias
+RUN npm run build
+# RUN npx tsc && npx tsc-alias
 
 FROM node:${NODE_VERSION}-alpine AS runtime
 ENV WORKDIR /opt
