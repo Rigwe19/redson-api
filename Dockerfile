@@ -17,43 +17,49 @@
 
 ARG NODE_VERSION=20.11.0
 
-# ---- Base Node Image ----
-FROM node:20-slim as base
-
-# ---- Set Working Directory ----
+# ---- Build Stage ----
+FROM node:${NODE_VERSION}-alpine AS build
 WORKDIR /opt
 
-# ---- Install System Dependencies ----
-RUN apt-get update && apt-get install -y \
-    python3 \
-    build-essential \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+# Install dependencies
+COPY package.json package-lock.json tsconfig.json tsconfig.base.json tsconfig.node.json .barrels.json .swcrc ./
+RUN npm ci
 
-# ---- Install App Dependencies ----
-COPY package.json package-lock.json* ./
-RUN npm install
+# Copy source files
+COPY ./src ./src
+COPY views ./views
 
-# ---- Copy Source Files ----
-COPY . .
-
-# ---- Build Source Code ----
+# Build the app
 RUN npm run build
+# Optional if you switch to tsc: RUN npx tsc && npx tsc-alias
 
 # ---- Runtime Stage ----
-FROM node:20-slim as runtime
+FROM node:${NODE_VERSION}-alpine AS runtime
+ENV WORKDIR /opt
+WORKDIR $WORKDIR
 
-WORKDIR /opt
+# Install minimal system packages
+RUN apk update && apk add build-base git curl
 
-COPY --from=base /opt /opt
+# PM2 is disabled for Render (commented out)
+# RUN npm install -g pm2
 
-# ---- Expose Port (adjust if needed) ----
+# Copy built app
+COPY --from=build /opt /opt
+
+# Install only production dependencies
+RUN npm ci --omit=dev --ignore-scripts
+
+# Copy remaining project files
+COPY . .
+
+# Expose port
 EXPOSE 8081
+ENV PORT 8081
+ENV NODE_ENV production
 
-# ---- PM2 RELATED (commented out) ----
-# RUN npm install pm2 -g
-# COPY processes.config.cjs .
+# PM2 start (disabled)
 # CMD ["pm2-runtime", "start", "processes.config.cjs", "--env", "production"]
 
-# ---- Recommended CMD for Render ----
-CMD ["node", "dist/index.js"]
+# Recommended command for Render
+CMD ["node", "/opt/dist/index.js"]
