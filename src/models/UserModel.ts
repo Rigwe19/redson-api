@@ -1,3 +1,4 @@
+import { Model, ObjectID, PreHook, Ref, Unique } from "@tsed/mongoose";
 import {
   CollectionOf,
   Example,
@@ -8,7 +9,7 @@ import {
   Property,
   Required,
 } from "@tsed/schema";
-import { Model, MongooseDocument, ObjectID, PreHook, Ref, Select, Unique } from "@tsed/mongoose";
+import { DocumentType } from "@typegoose/typegoose";
 import bcrypt from "bcryptjs";
 import { Address } from "./AddressModel.js";
 
@@ -17,7 +18,7 @@ import { Address } from "./AddressModel.js";
     timestamps: true,
   },
 })
-@PreHook("save", async (user: MongooseDocument<User>, next: any) => {
+@PreHook("save", async (user: DocumentType<User>, next: any) => {
   if (user.isModified("password")) {
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(user.password, salt);

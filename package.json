@@ -40,6 +40,7 @@
     "@tsed/platform-views": "^8.13.3",
     "@tsed/schema": "^8.13.3",
     "@tsed/swagger": "^8.13.3",
+    "@typegoose/typegoose": "^12.17.0",
     "ajv": "^8.17.1",
     "bcryptjs": "^3.0.2",
     "case": "^1.6.3",

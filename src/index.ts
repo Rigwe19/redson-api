@@ -30,7 +30,12 @@ try {
       await platform.stop();
     })
   );
-} catch (error) {
-  $log.error({event: "SERVER_BOOTSTRAP_ERROR", message: error.message, stack: error.stack});
+} catch (error:unknown) {
+  // Handle the case where error is not an instance of Error
+  if (!(error instanceof Error)) {
+    $log.error({event: "SERVER_BOOTSTRAP_ERROR", message: "An unknown error occurred", stack: String(error)});
+  }else{
+    $log.error({event: "SERVER_BOOTSTRAP_ERROR", message: error.message, stack: error.stack});
+  }
 }
 

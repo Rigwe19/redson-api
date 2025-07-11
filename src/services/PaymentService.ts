@@ -13,7 +13,7 @@ export class PaymentService {
     email: string;
     amount: number;
     metadata?: any;
-  }) {
+  }): Promise<{ status: boolean; message: string; data: any }>  {
     return this.paystack.transaction.initialize({
       email: data.email,
       amount: (data.amount * 100).toString(), // Paystack expects amount in kobo
@@ -21,7 +21,7 @@ export class PaymentService {
     });
   }
 
-  async verifyTransaction(reference: string) {
+  async verifyTransaction(reference: string): Promise<{ status: boolean; message: string; data: any }>  {
     return this.paystack.transaction.verify(reference);
   }
 }
