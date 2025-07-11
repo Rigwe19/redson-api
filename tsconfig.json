@@ -1,16 +1,12 @@
 {
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "baseUrl": ".",
-    "noEmit": true,
-    "paths": {
-      "src/*": ["src/*"]
-    },
+    "noEmit": true
   },
-  "include": [],
   "references": [
     {
       "path": "./tsconfig.node.json"
     }
-  ]
+  ],
+  "include": ["src/**/*"]
 }
