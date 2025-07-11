@@ -50,7 +50,7 @@ COPY --from=build /opt /opt
 # Install only production dependencies
 RUN npm ci --omit=dev --ignore-scripts
 
-RUN ls .
+RUN ls ./dist
 
 # Copy remaining project files
 COPY . .
@@ -64,4 +64,4 @@ ENV NODE_ENV production
 # CMD ["pm2-runtime", "start", "processes.config.cjs", "--env", "production"]
 
 # Recommended command for Render
-CMD ["node", "./dist/index.js"]
+CMD ["node", "opt/dist/index.js"]
