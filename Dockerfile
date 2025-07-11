@@ -45,4 +45,5 @@ EXPOSE 8081
 ENV PORT 8081
 ENV NODE_ENV production
 
-CMD ["pm2-runtime", "start", "processes.config.cjs", "--env", "production"]
+# CMD ["pm2-runtime", "start", "processes.config.cjs", "--env", "production"]
+CMD ["node", "dist/index.js"]
