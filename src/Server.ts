@@ -11,7 +11,7 @@ import { config } from "./config/index.js";
 import * as rest from "./controllers/rest/index.js";
 import * as pages from "./controllers/pages/index.js";
 // import session from "express-session";
-import "./protocols";
+import "./protocols/index.js";
 
 @Configuration({
   ...config,
