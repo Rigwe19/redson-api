@@ -28,7 +28,7 @@ import "./protocols";
   mongoose: [
     {
       id: "default", // Recommended: define default connection. All models without dbName will be assigned to this connection
-      url: "mongodb://127.0.0.1:27017/redson",
+      url: process.env.MONGODB!,
       connectionOptions: {},
     },
     // {
