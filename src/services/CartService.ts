@@ -1,4 +1,4 @@
-import {Inject, Injectable} from "@tsed/di";
+import { Inject, Injectable } from "@tsed/di";
 import { Model } from "mongoose";
 import { Cart } from "src/models/CartModel.js";
 import { CartItem } from "src/models/CartItemModel.js";
@@ -6,20 +6,25 @@ import { CartItem } from "src/models/CartItemModel.js";
 
 @Injectable()
 export class CartService {
-@Inject(Cart) private readonly cart: Model<Cart>;
-@Inject(CartItem) private readonly cartItem: Model<CartItem>;
-  async create(user_id: string, body: any): Promise<{cart: Cart, item: CartItem}> {
-    const cart = await this.cart.findOneAndUpdate({
-        user_id
-    },
-    // { $setOnInsert: {name: "Dohn Joe"} },
-    {},
-    {new: true, upsert: true})
-    const item = await this.cartItem.create(body);
+  @Inject(Cart) private readonly cart: Model<Cart>;
+  @Inject(CartItem) private readonly cartItem: Model<CartItem>;
+  async create(
+    user_id: string,
+    body: any
+  ): Promise<{ cart: Cart; item: CartItem }> {
+    const cart = await this.cart.findOneAndUpdate(
+      {
+        user_id,
+      },
+      // { $setOnInsert: {name: "Dohn Joe"} },
+      {},
+      { new: true, upsert: true }
+    );
+    const item = await this.cartItem.create({...body, cart_id: cart._id});
     return {
-        cart,
-        item
-    }
+      cart,
+      item,
+    };
   }
   async findOne(query: any): Promise<Cart | undefined | null> {
     return await this.cart.findOne(query);
@@ -34,17 +39,23 @@ export class CartService {
     });
   }
 
-  async deleteCart(query:string): Promise<boolean | null> {
+  async deleteCart(query: string): Promise<boolean | null> {
     await this.cart.findByIdAndDelete({ _id: query });
 
     // Delete all related cart items
     await this.cartItem.deleteMany({ cart_id: query });
 
-    return true
+    return true;
   }
 
-  async deleteItem(query:string): Promise<boolean | null> {
+  async deleteItem(query: string): Promise<boolean | null> {
     const item = await this.cartItem.findByIdAndDelete({ _id: query });
     return item !== null;
+  }
+  async findItem(query: any): Promise<CartItem[] | undefined | null> {
+    return await this.cartItem.find(query);
+  }
+  findItemWithProduct(cartId: string) {
+    return this.cartItem.find({ cart_id: cartId }).populate("product_id");
   }
 }

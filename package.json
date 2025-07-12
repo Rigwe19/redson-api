@@ -6,7 +6,9 @@
     "build": "tsc -p tsconfig.node.json && tsc-alias -p tsconfig.node.json",
     "swc-build": "npm run barrels && swc src --out-dir dist -s  --strip-leading-paths && tsc-alias -p tsconfig.json",
     "barrels": "barrels",
-    "start": "npm run barrels && nodemon src/index.ts",
+    "dev": "nodemon src/index.ts", 
+    "start": "tsc -p tsconfig.node.json && nodemon dist/index.js",
+    "swc-start": "npm run barrels && nodemon src/index.ts",
     "start:prod": "cross-env NODE_ENV=production node --import @swc-node/register/esm-register dist/index.js",
     "test": "npm run test:lint"
   },
@@ -57,6 +59,7 @@
     "koa-bodyparser": "^4.4.1",
     "koa-compress": "^5.1.1",
     "koa-override": "^4.0.0",
+    "koa-passport": "^6.0.0",
     "koa-qs": "^3.0.0",
     "mongodb": "^6.17.0",
     "mongoose": "^8.16.2",

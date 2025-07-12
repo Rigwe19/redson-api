@@ -11,7 +11,7 @@ import { User } from "./UserModel.js";
 export class Order {
   @ObjectID("id")
   @Property()
-  id: string;
+  _id: string;
 
   @Ref(() => User)
   user_id: Ref<User>;

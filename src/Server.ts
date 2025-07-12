@@ -10,6 +10,7 @@ import "@tsed/platform-multer/koa";
 import { config } from "./config/index.js";
 import * as rest from "./controllers/rest/index.js";
 import * as pages from "./controllers/pages/index.js";
+// import * as services from "./services/index.js";
 // import session from "express-session";
 import "./protocols/index.js";
 
@@ -22,6 +23,7 @@ import "./protocols/index.js";
     "/rest": [...Object.values(rest)],
     "/": [...Object.values(pages)],
   },
+  // imports: [...Object.values(services)], // <- Ensure services are loaded into DI
   multer: {
     dest: "./uploads",
   },

@@ -69,17 +69,4 @@ export class User {
   @Ref(() => Address)
   @CollectionOf(() => Address)
   address?: Ref<Address>[];
-
-  constructor(props: any) {
-    this._id = props.id;
-    this.email = props.email;
-    this.password = props.password;
-    this.firstName = props.firstName;
-    this.lastName = props.lastName;
-    this.token = props.token;
-  }
-
-  verifyPassword(password: string) {
-    return this.password === password;
-  }
 }

@@ -1,4 +1,4 @@
-import { Inject, Constant } from "@tsed/di";
+import { Inject, Constant, Injectable } from "@tsed/di";
 import { Unauthorized } from "@tsed/exceptions";
 import { OnVerify, Protocol } from "@tsed/passport";
 import { Req } from "@tsed/platform-http";
@@ -16,6 +16,7 @@ import { UsersService } from "src/services/UsersService.js";
     passwordField: "password",
   },
 })
+@Injectable()
 export class LocalProtocol implements OnVerify {
   @Inject()
   usersService: UsersService;
@@ -25,7 +26,7 @@ export class LocalProtocol implements OnVerify {
 
   async $onVerify(@Req() request: Req, @BodyParams() credentials: any) {
     const { email, password } = credentials;
-
+    console.log("usersService exists?", !!this.usersService);
     const user = await this.usersService.findOne({ email });
 
     if (!user) {
@@ -39,7 +40,7 @@ export class LocalProtocol implements OnVerify {
     const token = this.createJwtToken(user);
 
     user.token = token;
-    console.log(user, token)
+    console.log(user, token);
     return user;
   }
 
