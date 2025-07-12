@@ -19,14 +19,20 @@
     "resolveJsonModule": true,
     "newLine": "LF",
     "skipLibCheck": true,
-    "lib": ["ESNext", "esnext.asynciterable"],
+    "lib": [
+      "ESNext",
+      "esnext.asynciterable"
+    ],
     "declaration": false,
     "noResolve": false,
     "preserveConstEnums": true,
     "sourceMap": true,
-    "noEmit": false
-  },
-  "paths": {
-      "src/*": ["src/*"]
+    "noEmit": false,
+    "baseUrl": ".",
+    "paths": {
+      "src/*": [
+        "src/*"
+      ]
     }
+  },
 }
