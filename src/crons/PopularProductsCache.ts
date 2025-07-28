@@ -11,7 +11,7 @@ export class PopularProductsCacheJob {
 
 //   @Cron("0 */6 * * *") // Every 6 hours
   async cachePopularProducts() {
-    const products = await this.productService.getPopularProducts(8);
+    const products = await this.productService.getPopularProducts(undefined, 8);
     await this.cache.set("popular:products", products, { ttl: 60 * 60 * 6 }); // 6h TTL
   }
 }

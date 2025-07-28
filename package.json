@@ -3,12 +3,12 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "build": "tsc -p tsconfig.node.json && tsc-alias -p tsconfig.node.json",
-    "swc-build": "npm run barrels && swc src --out-dir dist -s  --strip-leading-paths && tsc-alias -p tsconfig.json",
+    "ts-build": "tsc -p tsconfig.node.json && tsc-alias -p tsconfig.node.json",
+    "build": "npm run barrels && swc src --out-dir dist -s  --strip-leading-paths && tsc-alias -p tsconfig.node.json",
     "barrels": "barrels",
     "dev": "nodemon src/index.ts",
-    "start": "tsc -p tsconfig.node.json && nodemon dist/index.js",
-    "swc-start": "npm run barrels && nodemon src/index.ts",
+    "ts-start": "tsc -p tsconfig.node.json && nodemon dist/index.js",
+    "start": "npm run barrels && nodemon src/index.ts",
     "start:prod": "cross-env NODE_ENV=production node --import @swc-node/register/esm-register dist/index.js",
     "test": "npm run test:lint"
   },
