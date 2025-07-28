@@ -28,6 +28,8 @@ RUN npm ci
 # Copy source files
 COPY ./src ./src
 COPY views ./views
+COPY emails ./emails
+COPY uploads ./uploads
 
 # Build the app
 RUN npm run build
@@ -42,7 +44,7 @@ WORKDIR $WORKDIR
 RUN apk update && apk add build-base git curl
 
 # PM2 is disabled for Render (commented out)
-# RUN npm install -g pm2
+RUN npm install -g pm2
 
 # Copy built app
 COPY --from=build /opt /opt
@@ -59,7 +61,7 @@ ENV PORT 8081
 ENV NODE_ENV production
 
 # PM2 start (disabled)
-# CMD ["pm2-runtime", "start", "processes.config.cjs", "--env", "production"]
+CMD ["pm2-runtime", "start", "processes.config.cjs", "--env", "production"]
 
 # Recommended command for Render
-CMD ["node", "dist/index.js"]
+# CMD ["node", "dist/index.js"]
