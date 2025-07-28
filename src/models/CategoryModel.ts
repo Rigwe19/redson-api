@@ -1,14 +1,14 @@
 import { Model, ObjectID } from "@tsed/mongoose";
-import { Property } from "@tsed/schema";
+import {Property} from "@tsed/schema";
 
 @Model({
   schemaOptions: {
-    timestamps: true,
-  },
+    timestamps: true
+  }
 })
 export class Category {
-  @ObjectID("id")
   @Property()
+  @ObjectID("id")
   _id: string;
 
   @Property()

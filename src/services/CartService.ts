@@ -20,7 +20,21 @@ export class CartService {
       {},
       { new: true, upsert: true }
     );
-    const item = await this.cartItem.create({...body, cart_id: cart._id});
+    const { product_id, ...rest } = body;
+    const item = await this.cartItem.findOneAndUpdate(
+      {
+        product_id,
+        cart_id: cart._id,
+      },
+      rest,
+      {
+        new: true,
+        upsert: true,
+        setDefaultsOnInsert: true,
+      }
+    );
+
+    // create({...body, cart_id: cart._id});
     return {
       cart,
       item,
@@ -52,10 +66,42 @@ export class CartService {
     const item = await this.cartItem.findByIdAndDelete({ _id: query });
     return item !== null;
   }
-  async findItem(query: any): Promise<CartItem[] | undefined | null> {
-    return await this.cartItem.find(query);
+  async findItem(query: any): Promise<any[] | null> {
+    const items = await this.cartItem
+      .find(query)
+      .populate("product_id", "name price slug images");
+
+    return items.map((item) => {
+      const product = item.product_id as any;
+      return {
+        id: item._id,
+        product_id: product._id,
+        name: product.name,
+        image: product.images?.[0].url || null,
+        price: product.price,
+        quantity: item.quantity,
+        size: item.size,
+        color: item.color,
+        slug: product.slug,
+      };
+    });
   }
   findItemWithProduct(cartId: string) {
     return this.cartItem.find({ cart_id: cartId }).populate("product_id");
+  }
+  async quantity(id: string, delta: number) {
+    const doc = await this.cartItem.findById(id);
+    // console.log(doc)
+    if (!doc) {
+      throw new Error("Quantity cannot be negative");
+    }
+    if (doc.quantity + delta < 1) {
+      throw new Error("Quantity cannot be negative");
+    }
+    return this.cartItem.findByIdAndUpdate(
+      id,
+      { $inc: { quantity: delta } },
+      { new: true }
+    );
   }
 }

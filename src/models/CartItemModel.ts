@@ -1,5 +1,5 @@
 import { Model, ObjectID, Ref } from "@tsed/mongoose";
-import {Property} from "@tsed/schema";
+import {Min, Property} from "@tsed/schema";
 import { Cart } from "./CartModel.js";
 import { Product } from "./ProductModel.js";
 
@@ -20,6 +20,7 @@ export class CartItem {
   product_id: Ref<Product>;
 
   @Property()
+  @Min(0)
   quantity: number;
 
   @Property()

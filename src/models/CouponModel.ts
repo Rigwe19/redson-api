@@ -1,6 +1,11 @@
-import { ObjectID } from "@tsed/mongoose";
+import { Model, ObjectID } from "@tsed/mongoose";
 import {Enum, Property} from "@tsed/schema";
 
+@Model({
+  schemaOptions: {
+    timestamps: true
+  }
+})
 export class CouponModel {
   @Property()
   @ObjectID("id")

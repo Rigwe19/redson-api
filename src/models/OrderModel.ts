@@ -1,5 +1,5 @@
 import { Model, ObjectID, Ref } from "@tsed/mongoose";
-import {Description, Enum, Property} from "@tsed/schema";
+import {Description, Enum, Optional, Property} from "@tsed/schema";
 import { Address } from "./AddressModel.js";
 import { User } from "./UserModel.js";
 
@@ -20,7 +20,7 @@ export class Order {
   address_id: Ref<Address>;
 
   @Property()
-  @Enum("pending", "processing", "shipped", "delivered", "cancelled")
+  @Enum("pending", "processing", "shipped", "completed", "cancelled")
   status: string;
 
   @Property()
@@ -36,4 +36,15 @@ export class Order {
   @Property()
   @Description('Discount + Subtotal + Delivery Fee')
   total: number;
+
+  @Property()
+  @Optional()
+  paidAt: Date;
+
+  
+  @Property()
+  createdAt: Date;
+
+  @Property()
+  updatedAt: Date;
 }

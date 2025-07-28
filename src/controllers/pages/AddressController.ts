@@ -17,12 +17,11 @@ export class AddressController {
   @Security("jwt")
   async createAddress(@BodyParams() address: Address, @Req("user") user: User) {
     address.user = user
-    const save = await this.addressService.create(address);
+    await this.addressService.create(address);
+    const addresses = await this.addressService.findAll(user._id);
     return {
       success: true,
-      address: save,
-      add: address,
-      user
+      addresses,
     };
   }
 
@@ -37,14 +36,26 @@ export class AddressController {
     };
   }
 
-  @Patch("/")
+  @Get("/active")
   @Authenticate("jwt", { session: false })
   @Security("jwt")
-  async updateAddress(@BodyParams() input: Address) {
-    const address = this.addressService.update(input._id, input);
+  async active(@Req("user") user: User) {
+    const address = await this.addressService.findOne({user: user._id, active: true});
     return {
       success: true,
       address,
+    };
+  }
+
+  @Patch("/")
+  @Authenticate("jwt", { session: false })
+  @Security("jwt")
+  async updateAddress(@BodyParams() input: any, @Req("user") user: User) {
+    await this.addressService.update(user._id, input.id, input);
+    const addresses = await this.addressService.findAll(user._id);
+    return {
+      success: true,
+      addresses,
     };
   }
 
@@ -67,16 +78,18 @@ export class AddressController {
   @Delete("/:id")
   @Authenticate("jwt", { session: false })
   @Security("jwt")
-  async deleteAddress(@PathParams("id") id: string) {
+  async deleteAddress(@PathParams("id") id: string, @Req('user') user: User) {
     const address = await this.addressService.delete(id);
 
     if (!address) {
       return { success: false, message: `No address with id : ${id}` };
     }
+    const addresses = await this.addressService.findAll(user._id);
 
     return {
       success: true,
       message: "Address Deleted",
+      addresses
     };
   }
 }

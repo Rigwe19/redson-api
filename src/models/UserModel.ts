@@ -1,6 +1,7 @@
 import { Model, ObjectID, PreHook, Ref, Unique } from "@tsed/mongoose";
 import {
   CollectionOf,
+  Default,
   Example,
   Format,
   Groups,
@@ -17,6 +18,9 @@ import { Address } from "./AddressModel.js";
   schemaOptions: {
     timestamps: true,
   },
+  // hooks: {
+  //   plugins: [CaseTransformPlugin]
+  // }
 })
 @PreHook("save", async (user: DocumentType<User>, next: any) => {
   if (user.isModified("password")) {
@@ -28,7 +32,6 @@ import { Address } from "./AddressModel.js";
     user.set("address", undefined, { strict: false });
   }
 
-  
   next();
 })
 export class User {
@@ -40,11 +43,13 @@ export class User {
   @Groups("!credentials")
   @Required()
   @MinLength(3)
+  // @Case("title")
   firstName: string;
 
   @Groups("!credentials")
   @Required()
   @MaxLength(100)
+  // @Case("title")
   lastName: string;
 
   @Property()
@@ -55,15 +60,24 @@ export class User {
   email: string;
 
   @Property()
+  @Default("user")
   role: "user" | "admin" = "user";
 
   @MinLength(8)
-  // @Select(false)
   @Groups("credentials")
   password: string;
 
+  @MinLength(11)
+  @Groups("!credentials")
+  phoneNumber: string;
+
   @Groups("token", "!credentials")
   token: string;
+
+  @Groups("!credentials")
+  @Default("email")
+  @Property()
+  type: "email" | "google";
 
   @Groups("!credentials")
   @Ref(() => Address)

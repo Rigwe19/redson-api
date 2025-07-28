@@ -1,0 +1,44 @@
+<main
+  style="margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background-color: #f5f5f5;"
+>
+  <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+    <tr>
+      <td align="center" style="padding: 30px 0;">
+        <table
+          width="600"
+          cellpadding="0"
+          cellspacing="0"
+          style=""
+        >
+          <tr>
+            <td style="padding: 40px;">
+              <h1 style="color: #D10024; margin-top: 0;">New Order Notification</h1>
+              <p style="font-size: 16px; color: #333;">Hello Admin,</p>
+
+              <p style="font-size: 16px; color: #333;">
+                A new order has been placed on the website and requires your
+                attention.
+              </p>
+
+              <p style="font-size: 16px; color: #333;">Order Details:</p>
+              <ul style="padding-left: 20px; font-size: 16px; color: #333;">
+                <li><strong>Order ID:</strong> {{id}}</li>
+                <li><strong>Customer Name:</strong> {{name}}</li>
+                <li><strong>Amount:</strong> ₦{{amount}}</li>
+              </ul>
+
+              <p style="font-size: 16px; color: #333;">
+                Please log in to the admin panel to view and process the order.
+              </p>
+
+              <p style="font-size: 16px; color: #333;">Thank you!</p>
+
+              <p style="font-size: 16px; color: #333;">Best regards,</p>
+              <p style="font-size: 16px; color: #333;"><strong>The CBN Team</strong></p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</main>

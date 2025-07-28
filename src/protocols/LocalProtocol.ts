@@ -26,7 +26,6 @@ export class LocalProtocol implements OnVerify {
 
   async $onVerify(@Req() request: Req, @BodyParams() credentials: any) {
     const { email, password } = credentials;
-    console.log("usersService exists?", !!this.usersService);
     const user = await this.usersService.findOne({ email });
 
     if (!user) {
@@ -40,14 +39,14 @@ export class LocalProtocol implements OnVerify {
     const token = this.createJwtToken(user);
 
     user.token = token;
-    console.log(user, token);
+    // console.log(user, token);
     return user;
   }
 
   createJwtToken(user: User) {
     const { issuer, audience, secretOrKey, maxAge = 3600 } = this.jwtSettings;
     const now = Date.now();
-
+//veekite.com.ng, tare
     return jwt.sign(
       {
         iss: issuer,

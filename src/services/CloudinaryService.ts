@@ -25,7 +25,7 @@ export class CloudinaryService {
       })
       .catch((error: any) => {
         console.log(error);
-        return undefined;
+        throw new Error("Image not saved, try again")
       });
   };
 

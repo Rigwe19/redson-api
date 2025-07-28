@@ -8,7 +8,9 @@ export const config: Partial<TsED.Configuration> = {
   version: pkg.version,
   envs,
   ajv: {
-    returnsCoercedValues: true
+    returnsCoercedValues: true,
+    verbose: false,
+    keywords: [],
   },
   logger: loggerConfig,
   passport: {

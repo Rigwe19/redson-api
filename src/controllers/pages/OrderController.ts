@@ -40,9 +40,7 @@ export class OrderController {
   @Post("/init")
   @Returns(200, PlaceOrderResponse)
   @Description("Paystack payment URL")
-  async initializePayment(
-    @Req("user") user: User
-  ) {
+  async initializePayment(@Req("user") user: User) {
     const userId = user._id;
     // 1. Get active address
     const address = await this.addressService.findOne({
@@ -66,7 +64,7 @@ export class OrderController {
     }
 
     const cartItems = await this.cartService.findItemWithProduct(cart._id);
-    console.log(cartItems)
+    // console.log(cartItems);
     if (!cartItems.length) {
       return {
         success: false,
@@ -82,7 +80,7 @@ export class OrderController {
       if (typeof product !== "string") {
         const unitPrice = product.price;
         const itemTotal = unitPrice * item.quantity;
-        console.log(unitPrice, product, item.quantity, itemTotal);
+        // console.log(unitPrice, product, item.quantity, itemTotal);
         subtotal += itemTotal;
 
         return {
@@ -98,37 +96,37 @@ export class OrderController {
     });
 
     // 4. Calculate delivery & discount (customize logic if needed)
-    const deliveryFee = 1500;
+    const deliveryFee = 3000;
     const discount = 0;
     const total = subtotal + deliveryFee - discount;
 
     // 5. Save order
-    const order = await this.orderService.create({
-      user_id: userId,
-      address_id: address._id,
-      status: "pending",
-      subtotal,
-      delivery_fee: deliveryFee,
-      discount,
-      total,
-    });
-    
-    orderItems.forEach((item) => {
-      this.orderService.createItem({...item, order_id: order._id});
-    });
+    // const order = await this.orderService.create({
+    //   user_id: userId,
+    //   address_id: address._id,
+    //   status: "pending",
+    //   subtotal,
+    //   delivery_fee: deliveryFee,
+    //   discount,
+    //   total,
+    // });
+
+    // orderItems.forEach((item) => {
+    //   this.orderService.createItem({ ...item, order_id: order._id });
+    // });
     // console.log(amount);
     const response = await this.paymentService.initializeTransaction({
       email: user.email,
       amount: total,
       metadata: {
         cartId: cart._id,
-        orderId: order._id,
-        items: orderItems.length,
+        // orderId: order._id,
+        // items: orderItems.length,
         userId: userId,
         addressId: address._id,
       },
     });
-    console.log(response);
+    // console.log(response);
     if (!response.status) {
       throw new Error("Failed to initialize payment");
     }
@@ -140,10 +138,13 @@ export class OrderController {
       throw new Error("Authorization URL not found in Paystack response");
     }
     // Return the authorization URL to the client
-    return response.data?.authorization_url;
+    return {
+      success: true,
+      url: response.data?.authorization_url,
+    };
   }
 
-  @Post("/")
+  @Post("/paystack-websocket")
   @Returns(200, String)
   @Description("Paystack payment URL")
   async handleWebhook(@BodyParams() body: any, @Req() req: Req) {
@@ -177,6 +178,11 @@ export class OrderController {
   @Description("Paystack payment URL")
   async verify(@BodyParams("reference") reference: string) {
     const result = await this.paymentService.verifyTransaction(reference);
-    return result.data;
+    const id = result.orderId
+    const order = await this.orderService.getOrderDetails(id);
+    return {
+      order,
+      success: true
+    };
   }
 }

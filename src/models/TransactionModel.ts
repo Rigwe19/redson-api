@@ -1,5 +1,5 @@
 import { Model, ObjectID, Ref } from "@tsed/mongoose";
-import { Enum, Property } from "@tsed/schema";
+import { Enum, Optional, Property } from "@tsed/schema";
 import { Order } from "./OrderModel.js";
 import { User } from "./UserModel.js";
 
@@ -23,7 +23,7 @@ export class Transaction {
   amount: number;
 
   @Property()
-  @Enum('cash', 'flutterwave', 'paystack')
+  @Enum("cash", "flutterwave", "paystack")
   payment_method: string;
 
   @Property()
@@ -32,4 +32,14 @@ export class Transaction {
 
   @Property()
   transaction_id: string;
+
+  @Property()
+  @Optional()
+  authorization: any;
+
+  @Property()
+  createdAt: Date;
+
+  @Property()
+  updatedAt: Date;
 }

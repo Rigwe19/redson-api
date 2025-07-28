@@ -12,6 +12,13 @@ interface Image {
   url: string;
   public_id: string;
 }
+interface Variant {
+  sku: string;             // Unique stock keeping unit (optional)
+  color: string;           // e.g. "Red"
+  size: string;            // e.g. "L", "M", "42"
+  stock: number;           // Quantity in stock
+  price?: number;          // Optional override of basePrice
+}
 @Model({
   schemaOptions: {
     timestamps: true,
@@ -43,11 +50,18 @@ export class Product {
   @Required()
   inventory: number;
 
+  @Property()
+  @Default(5)
+  reorderLevel: number;
+
   @Ref(() => Category)
   category_id: Ref<Category>;
 
   @Property()
-  images: Image[]; // Replace 'any' with your image schema/model if available
+  images: Image[];
+
+  @Property()
+  variants: Variant[];
 
   @CollectionOf(String)
   sizes: string[]; // Replace 'any' with a specific type if available

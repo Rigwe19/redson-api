@@ -24,6 +24,11 @@ import "./protocols/index.js";
     "/": [...Object.values(pages)],
   },
   // imports: [...Object.values(services)], // <- Ensure services are loaded into DI
+  cache: {
+    ttl: 60 * 60 * 6, // 6 hours
+    store: "memory",
+    prefix: "redson:",
+  },
   multer: {
     dest: "./uploads",
   },
