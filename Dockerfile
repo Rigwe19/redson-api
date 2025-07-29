@@ -61,7 +61,7 @@ ENV PORT 8081
 ENV NODE_ENV production
 
 # PM2 start (disabled)
-CMD ["pm2-runtime", "start", "processes.config.cjs", "--env", "production"]
+# CMD ["pm2-runtime", "start", "processes.config.cjs", "--env", "production"]
 
 # Recommended command for Render
-# CMD ["node", "dist/index.js"]
+CMD ["node", "dist/index.js"]
