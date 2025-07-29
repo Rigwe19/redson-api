@@ -23,6 +23,8 @@ export class UsersService {
     redirectUri: process.env.GOOGLE_REDIRECT_URI,
   });
   async create(body: any): Promise<User> {
+
+    await this.mailService.sendWelcomeEmail(body.email, body.firstName);
     return this.model.create({ ...body, type: "email" });
   }
 

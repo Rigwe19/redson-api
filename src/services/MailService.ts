@@ -19,10 +19,6 @@ export class MailService {
   });
 
   private readonly defaultFrom = process.env.SMTP_FROM!;
-//   private readonly defaultFrom = {
-//   name: 'Redson',
-//   address: process.env.SMTP_FROM!,
-// };
 
 
   private async renderTemplate(templateName: string, context: any) {
