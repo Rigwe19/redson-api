@@ -365,7 +365,7 @@ export class ProductService {
     // Example pagination and sorting (optional)
     const limit = parseInt(query.limit) || 20;
     const page = parseInt(query.page) || 1;
-
+    console.log(filter);
     const products = await this.model
       .find(filter)
       .skip((page - 1) * limit)

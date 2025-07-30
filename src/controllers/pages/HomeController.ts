@@ -202,7 +202,13 @@ export class HomeController {
     //   category._id
     // );
     // console.log(query)
-    const filter = await this.productService.getFilteredProducts({...query, category: category._id})
+    let search = {}
+    if(id !== 'all'){
+      search = {
+        category: category._id
+      }
+    }
+    const filter = await this.productService.getFilteredProducts({...query, ...search})
 
     // if (!products || products.length === 0) {
     //   return {

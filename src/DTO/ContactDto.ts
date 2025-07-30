@@ -1,15 +1,11 @@
 import { Required, Email, MinLength, MaxLength } from "@tsed/schema";
 
 export class ContactDto {
-  @Required()
-  @MinLength(2)
-  @MaxLength(50)
-  first_name: string;
 
   @Required()
   @MinLength(2)
   @MaxLength(50)
-  last_name: string;
+  fullName: string;
 
   @Required()
   @Email()
@@ -21,9 +17,6 @@ export class ContactDto {
 
   @Required()
   message: string;
-
-  @Required()
-  gender: "male" | "female" | "other";
 }
 export class ContactResponseDto {
   success: boolean;

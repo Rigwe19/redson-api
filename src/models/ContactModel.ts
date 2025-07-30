@@ -14,13 +14,7 @@ export class Contact {
   @Required()
   @MinLength(2)
   @MaxLength(50)
-  first_name: string;
-
-  @Property()
-  @Required()
-  @MinLength(2)
-  @MaxLength(50)
-  last_name: string;
+  fullName: string;
 
   @Property()
   @Required()
@@ -29,7 +23,7 @@ export class Contact {
 
   @Property()
   @Required()
-  @MinLength(7)
+  @MinLength(11)
   @MaxLength(20)
   phone: string;
 
@@ -38,8 +32,4 @@ export class Contact {
   @MinLength(5)
   @MaxLength(500)
   message: string;
-
-  @Property()
-  @Required()
-  gender: "male" | "female" | "other";
 }

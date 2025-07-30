@@ -94,4 +94,16 @@ export class MailService {
       html,
     });
   }
+
+  async sendContactNotification(to: string, subscriber: any) {
+    const html = await this.renderTemplate("contactDetails", subscriber);
+
+    return this.transporter.sendMail({
+      from: this.defaultFrom,
+      to,
+      replyTo: subscriber.email,
+      subject: "New Contact Message",
+      html,
+    });
+  }
 }

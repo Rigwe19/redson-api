@@ -15,13 +15,17 @@ export class ContactService {
     private readonly mailService: MailService;
 
 async handleContact(body: any) {
-    const requiredFields = ["first_name", "last_name", "email", "phone", "message", "gender"];
+    const requiredFields = ["fullName","email", "phone", "message"];
     for (const field of requiredFields) {
       if (!body[field]) {
         throw new BadRequest("Please fill all the fields");
       }
     }
-    // await sendContactDetails(body);
+
+    const subscriber = await this.contact.create(body);
+    await this.mailService.sendContactNotification("info@allagesbyredson.com", body);
+
+    return subscriber;
   }
 
   async subscriber(email: string) {
@@ -29,7 +33,9 @@ async handleContact(body: any) {
       throw new BadRequest("Please fill in email field");
     }
 
-    const subscriber = await this.subscribe.create({ email });
+    const subscriber = await this.subscribe.findOneAndUpdate({ email }, {
+      $set: {email}
+    });
     await this.mailService.sendSubscription(email, { email });
     await this.mailService.sendSubscriptionNotification("info@allagesbyredson.com", { email });
 

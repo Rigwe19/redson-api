@@ -13,6 +13,5 @@ export class Subscribe {
   @Property()
   @Required()
   @Format("email")
-  @Unique()
   email: string;
 }

@@ -18,7 +18,7 @@ export class OtherController {
     await this.contactService.handleContact(body);
     return {
       success: true,
-      message: "Contact collected successfully"
+      message: "We have gotten your message!, we would get back to you shortly."
     };
   }
 
@@ -29,7 +29,7 @@ export class OtherController {
     await this.contactService.subscriber(dto.email);
     return {
       success: true,
-      message: "User Subscribed"
+      message: "Thank you for subscribing! you'll receive updates from us shortly."
     };
   }
 
