@@ -26,12 +26,12 @@ export class OrderService {
   }
 
   async findAll(query?: string): Promise<any[]> {
-    const filter:any = {};
+    const filter: any = { status: "success" };
 
     if (query) {
       filter["order_id.user_id"] = query;
     }
-
+    console.log(filter);
     const transactions = await this.transaction
       .find(filter)
       .sort({ createdAt: -1 })
@@ -42,11 +42,16 @@ export class OrderService {
           select: "firstName lastName",
         },
       })
+      .populate({
+        path: "user_id",
+        select: "firstName lastName",
+      })
       .lean();
 
+    console.log(transactions);
     return transactions.map((transaction) => {
       const order = transaction.order_id as Order;
-      const user = order.user_id as User;
+      const user = transaction.user_id as User;
 
       return {
         transactionId: transaction.transaction_id,
@@ -151,9 +156,9 @@ export class OrderService {
       .populate("address_id")
       .lean();
 
-    if (!order) throw new Error("Order not found");
+    // if (!order) throw new Error("Order not found");
 
-    const address = order.address_id as Address;
+    const address = order?.address_id as Address;
 
     return {
       ...transaction,

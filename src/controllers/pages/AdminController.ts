@@ -93,6 +93,7 @@ export class AdminController {
   @Returns(200, Object)
   async getOrders() {
     const orders = await this.orderService.findAll();
+    console.log(orders)
     return { success: true, message: "Success", orders };
   }
 
