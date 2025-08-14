@@ -26,7 +26,7 @@ export class OrderService {
   }
 
   async findAll(query?: string): Promise<any[]> {
-    const filter:any = { status: "success" };
+    const filter:any = {};
 
     if (query) {
       filter["order_id.user_id"] = query;
