@@ -7,24 +7,29 @@ export class AddressService {
   @Inject(Address) private readonly model: Model<Address>;
 
   async create(body: any): Promise<Address> {
-    const { _id, user, ...dataWithoutId } = body;
-    console.log(dataWithoutId, user, _id)
+    const { user, ...dataWithoutId } = body;
+    if (body._id) {
+      dataWithoutId._id = body._id;
+    }
+
+    // console.log(dataWithoutId, user);
+
     if (body.active) {
       await this.model.findOneAndUpdate(
         { user: body.user, active: true },
         { active: false }
       );
     }
+
     return await this.model.findOneAndUpdate(
-      { _id, user },
+      { _id: body._id, user },
       dataWithoutId,
       {
-        new: true, // Return the updated doc
-        upsert: true, // Create if not found
+        new: true,
+        upsert: true,
         setDefaultsOnInsert: true,
       }
     );
-    // await this.model.create(body);
   }
 
   async findOne(query: any): Promise<Address | undefined | null> {
@@ -36,11 +41,16 @@ export class AddressService {
     return await this.model.find({ user: query }).sort({ createdAt: -1 });
   }
 
-  async update(user: string, id:string, body: any): Promise<Address | null | undefined> {
+  async update(
+    user: string,
+    id: string,
+    body: any
+  ): Promise<Address | null | undefined> {
     try {
       const deleted = await this.model.findOneAndUpdate(
         { user, active: true },
-        { $set: {active: false} },{
+        { $set: { active: false } },
+        {
           new: true,
           runValidators: true,
         }

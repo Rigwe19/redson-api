@@ -46,7 +46,6 @@ export class LocalProtocol implements OnVerify {
   createJwtToken(user: User) {
     const { issuer, audience, secretOrKey, maxAge = 3600 } = this.jwtSettings;
     const now = Date.now();
-//veekite.com.ng, tare
     return jwt.sign(
       {
         iss: issuer,
