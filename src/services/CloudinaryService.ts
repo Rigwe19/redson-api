@@ -20,8 +20,8 @@ export class CloudinaryService {
         // height: 200,
         crop: "fill",
       })
-      .then((data: { url: any; public_id: any; }) => {
-        return { url: data.url, public_id: data.public_id };
+      .then((data: { secure_url: any; public_id: any; }) => {
+        return { url: data.secure_url, public_id: data.public_id };
       })
       .catch((error: any) => {
         console.log(error);
