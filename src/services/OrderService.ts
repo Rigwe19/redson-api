@@ -26,12 +26,12 @@ export class OrderService {
   }
 
   async findAll(query?: string): Promise<any[]> {
-    const filter: any = {};
+    const filter: any = { status: "success" };
 
     if (query) {
       filter["order_id.user_id"] = query;
     }
-    console.log(filter);
+    // console.log(filter);
     const transactions = await this.transaction
       .find(filter)
       .sort({ createdAt: -1 })
