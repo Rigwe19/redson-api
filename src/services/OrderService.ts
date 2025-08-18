@@ -26,7 +26,7 @@ export class OrderService {
   }
 
   async findAll(query?: string): Promise<any[]> {
-    const filter: any = { status: "success" };
+    const filter: any = {};
 
     if (query) {
       filter["order_id.user_id"] = query;
@@ -48,7 +48,7 @@ export class OrderService {
       })
       .lean();
 
-    console.log(transactions);
+    // console.log(transactions);
     return transactions.map((transaction) => {
       const order = transaction.order_id as Order;
       const user = transaction.user_id as User;
