@@ -28,18 +28,40 @@ async handleContact(body: any) {
     return subscriber;
   }
 
-  async subscriber(email: string) {
+  async subscriber({email, frequency}: {email: string; frequency: string}) {
     if (!email) {
       throw new BadRequest("Please fill in email field");
     }
-
-    const subscriber = await this.subscribe.findOneAndUpdate({ email }, {
-      $set: {email}
-    });
+    let subscriber = await this.subscribe.findOne({email})
+    if(subscriber) {
+      subscriber.frequency = frequency;
+      subscriber.save()
+    }else{
+      subscriber = await this.subscribe.create({email, frequency})
+    }
+    // const subscriber = await this.subscribe.findOneAndUpdate({ email }, {
+    //   $set: {email, frequency}
+    // });
     await this.mailService.sendSubscription(email, { email });
     await this.mailService.sendSubscriptionNotification("info@allagesbyredson.com", { email });
 
     return subscriber;
+  }
+
+  async getSubscriber(email:string) {
+    let subscriber = await this.subscribe.findOne({email})
+    if (!subscriber) {
+      return false;
+    }
+    return subscriber.frequency
+  }
+
+  async unsubscribe(email:string) {
+    let subscriber = await this.subscribe.findOne({email})
+    if (!subscriber) {
+      return false;
+    }
+    return subscriber.deleteOne()
   }
 
   async createDistributor(data: any) {

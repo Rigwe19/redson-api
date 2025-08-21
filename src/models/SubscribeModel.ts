@@ -14,4 +14,8 @@ export class Subscribe {
   @Required()
   @Format("email")
   email: string;
+
+  @Property()
+  @Required()
+  frequency: string;
 }

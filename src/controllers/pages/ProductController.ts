@@ -115,12 +115,13 @@ export class ProductController {
     };
   }
 
-  @Put("/")
+  @Put("/update/:id")
   @Authenticate("jwt", { session: false })
   @Security("jwt")
   async updateProduct(
     @MultipartFile("files") files: PlatformMulterFile[],
-    @BodyParams() input: any
+    @BodyParams() input: any,
+    @PathParams("id") id: string
   ) {
     const urls = [];
     for (const file of files) {
@@ -139,7 +140,7 @@ export class ProductController {
     }
 
     input.images = urls;
-    const product = this.productService.update(input._id, input);
+    const product = this.productService.update(id, input);
     return {
       success: true,
       product,

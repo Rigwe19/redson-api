@@ -4,6 +4,9 @@ export class SubscribeDto {
   @Required()
   @Email()
   email: string;
+
+  @Required()
+  frequency: string;
 }
 export class SubscribeResponseDto {
   success: boolean;

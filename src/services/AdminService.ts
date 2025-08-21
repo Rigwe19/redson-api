@@ -381,6 +381,7 @@ export class AdminService {
       }
 
       return {
+        id: product._id,
         name: product.name,
         currentStock: `${product.inventory} pcs`,
         reorderLevel: `${product.reorderLevel ?? 5} pcs`,
