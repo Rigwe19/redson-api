@@ -1,4 +1,4 @@
-import { Injectable } from "@tsed/di";
+import { Injectable, logger } from "@tsed/di";
 import fs from "fs/promises";
 import handlebars from "handlebars";
 import path from "node:path";
@@ -9,14 +9,18 @@ import nodemailer from "nodemailer";
 @Injectable()
 export class MailService {
   private readonly transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST!,
-    port: Number(process.env.SMTP_PORT!) || 587,
-    secure: true,
-    auth: {
-      user: process.env.SMTP_USER!,
-      pass: process.env.SMTP_PASS!,
-    },
-  });
+  host: process.env.SMTP_HOST!,
+  port: Number(process.env.SMTP_PORT!) || 587,
+  secure: false,              // MUST be false for TLS/STARTTLS
+  auth: {
+    user: process.env.SMTP_USER!,
+    pass: process.env.SMTP_PASS!,
+  },
+  tls: {
+    rejectUnauthorized: false,  // optional: disables certificate check
+    ciphers: "SSLv3",           // optional, helps some SMTP providers
+  }
+});
 
   private readonly defaultFrom = process.env.SMTP_FROM!;
 
@@ -31,7 +35,9 @@ export class MailService {
 
   async sendWelcomeEmail(to: string, name: string) {
     const html = await this.renderTemplate("welcome", { name });
-
+    console.log(
+      'HOST', process.env.SMTP_HOST
+    );
     return this.transporter.sendMail({
       from: this.defaultFrom,
       to,
