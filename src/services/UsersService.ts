@@ -24,7 +24,7 @@ export class UsersService {
   });
   async create(body: any): Promise<User> {
 
-    await this.mailService.sendWelcomeEmail(body.email, body.firstName);
+    // await this.mailService.sendWelcomeEmail(body.email, body.firstName);
     return this.model.create({ ...body, type: "email" });
   }
 

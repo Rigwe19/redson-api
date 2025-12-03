@@ -160,17 +160,17 @@ export class PaymentService {
       );
       await this.cart.deleteOne({ _id: cart });
       await this.cartItem.deleteMany({ cart_id: cart });
-      await this.mailService.sendOrderNotification(user.email, {
-        name: user.firstName,
-        id: order,
-        amount: paystack.data.amount,
-      });
+      // await this.mailService.sendOrderNotification(user.email, {
+      //   name: user.firstName,
+      //   id: order,
+      //   amount: paystack.data.amount,
+      // });
 
-      await this.mailService.sendOrderConfirmation({
-        name: user?.firstName,
-        id: order,
-        amount: paystack.data.amount,
-      });
+      // await this.mailService.sendOrderConfirmation({
+      //   name: user?.firstName,
+      //   id: order,
+      //   amount: paystack.data.amount,
+      // });
 
       return {
         status: paystack.status ? "success" : "failed",
