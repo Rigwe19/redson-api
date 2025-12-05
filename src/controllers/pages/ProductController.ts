@@ -3,7 +3,7 @@ import { Authenticate } from "@tsed/passport";
 import { MultipartFile, Req } from "@tsed/platform-http";
 import { type PlatformMulterFile } from "@tsed/platform-multer";
 import { BodyParams, PathParams } from "@tsed/platform-params";
-import { Delete, Get, Post, Put, Security } from "@tsed/schema";
+import { Delete, Get, Patch, Post, Put, Security } from "@tsed/schema";
 import fs from "fs";
 import { Product } from "src/models/ProductModel.js";
 import { CloudinaryService } from "src/services/CloudinaryService.js";
@@ -115,7 +115,7 @@ export class ProductController {
     };
   }
 
-  @Put("/update/:id")
+  @Patch("/update/:id")
   @Authenticate("jwt", { session: false })
   @Security("jwt")
   async updateProduct(
