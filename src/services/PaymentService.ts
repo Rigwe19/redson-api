@@ -52,133 +52,114 @@ export class PaymentService {
   async verifyTransaction(
     reference: string
   ): Promise<{ status: string; message: string; data: any; orderId: string }> {
-    const trans = await this.transaction.findOne({
-      reference,
+    // 1. Verify with Paystack
+    const paystack = await this.paystack.transaction.verify(reference);
+
+    // 2. Check if transaction already processed
+    const existingTrans = await this.transaction.findOne({
+      transaction_id: reference,
       status: "success",
     });
-    const paystack = await this.paystack.transaction.verify(reference);
-    if (trans) {
+
+    if (existingTrans) {
+      // Return existing order, do not recreate anything
       return {
-        status: paystack.status ? "success" : "failed",
-        message: paystack.message,
+        status: "success",
+        message: "Transaction already processed",
         data: paystack.data,
-        orderId: trans.order_id.toString(),
+        orderId: existingTrans.order_id.toString(),
       };
     }
-    if (paystack.status && paystack.data?.status === "success") {
-      // const orderId = paystack.data?.metadata?.orderId;
-      const addressId = paystack.data?.metadata?.addressId;
-      const cart = paystack.data?.metadata?.cartId;
-      const user = await this.user.findById(paystack.data.metadata.userId);
-      if (!user) {
-        throw new Error("User not found");
+
+    // 3. Paystack says unsuccessful
+    if (!paystack.status || paystack.data?.status !== "success") {
+      throw new Error("Payment not successful");
+    }
+
+    // 4. Continue only if this is a NEW successful payment
+    const meta = paystack.data.metadata;
+    const addressId = meta.addressId;
+    const cartId = meta.cartId;
+
+    const user = await this.user.findById(meta.userId);
+    if (!user) throw new Error("User not found");
+
+    const cartItems = await this.cartItem
+      .find({ cart_id: cartId })
+      .populate("product_id");
+
+    if (!cartItems.length) throw new Error("Cart not found or empty");
+
+    // 5. Build order items
+    let subtotal = 0;
+
+    const orderItems = cartItems.map((item) => {
+      const product = item.product_id as Product;
+
+      if (typeof product === "string") {
+        throw new Error("Product is not populated");
       }
-      const cartItems = await this.cartItem
-        .find({ cart_id: cart })
-        .populate("product_id");
-      let subtotal = 0;
 
-      const orderItems = cartItems.map((item) => {
-        const product = item.product_id as Product;
-        if (typeof product !== "string") {
-          const unitPrice = product.price;
-          const itemTotal = unitPrice * item.quantity;
-          // console.log(unitPrice, product, item.quantity, itemTotal);
-          subtotal += itemTotal;
-
-          return {
-            product_id: product._id,
-            quantity: item.quantity,
-            size: item.size,
-            color: item.color,
-            unit_price: unitPrice,
-          };
-        } else {
-          throw new Error("Product is not populated");
-        }
-      });
-
-      // 4. Calculate delivery & discount (customize logic if needed)
-      const deliveryFee = 3000;
-      const discount = 0;
-      const total = subtotal + deliveryFee - discount;
-      const order = await this.order.create({
-        user_id: user._id,
-        address_id: addressId,
-        status: "pending",
-        subtotal,
-        delivery_fee: deliveryFee,
-        discount,
-        total,
-      });
-      await this.transaction.updateOne(
-        { transaction_id: reference, order_id: order._id },
-        {
-          $set: {
-            status: "success",
-            authorization: paystack.data.authorization,
-          },
-        }
-      );
-      orderItems.forEach(async (item) => {
-        await this.orderItem.create({ ...item, order_id: order._id });
-        await this.product.updateOne(
-          { _id: item.product_id },
-          { $inc: { inventory: -item.quantity } }
-          // [
-          //   {
-          //     $set: {
-          //       variants: {
-          //         $map: {
-          //           input: "$variants",
-          //           in: {
-          //             $cond: [
-          //               { $eq: ["$$this._id", variantId] },
-          //               {
-          //                 $mergeObjects: [
-          //                   "$$this",
-          //                   {
-          //                     stock: { $substract: ["$$this.stock", quantity] },
-          //                   },
-          //                 ],
-          //               },
-          //               "$$this",
-          //             ],
-          //           },
-          //         },
-          //       },
-          //     },
-          //   },
-          // ],
-          // { arrayFilters: [{ "elem._id": variantId }] }
-        );
-      });
-      // console.log(user, )
-      await this.order.updateOne(
-        { _id: order },
-        { $set: { paidAt: new Date() } }
-      );
-      await this.cart.deleteOne({ _id: cart });
-      await this.cartItem.deleteMany({ cart_id: cart });
-      // await this.mailService.sendOrderNotification(user.email, {
-      //   name: user.firstName,
-      //   id: order,
-      //   amount: paystack.data.amount,
-      // });
-
-      // await this.mailService.sendOrderConfirmation({
-      //   name: user?.firstName,
-      //   id: order,
-      //   amount: paystack.data.amount,
-      // });
+      const unitPrice = product.price;
+      const itemTotal = unitPrice * item.quantity;
+      subtotal += itemTotal;
 
       return {
-        status: paystack.status ? "success" : "failed",
-        message: paystack.message,
-        data: paystack.data,
-        orderId: order._id,
+        product_id: product._id,
+        quantity: item.quantity,
+        size: item.size,
+        color: item.color,
+        unit_price: unitPrice,
       };
+    });
+
+    const deliveryFee = 3000;
+    const discount = 0;
+    const total = subtotal + deliveryFee - discount;
+
+    // 6. Create order
+    const order = await this.order.create({
+      user_id: user._id,
+      address_id: addressId,
+      status: "pending",
+      subtotal,
+      delivery_fee: deliveryFee,
+      discount,
+      total,
+    });
+
+    // 7. Create transaction record
+    await this.transaction.create({
+      transaction_id: reference,
+      order_id: order._id,
+      status: "success",
+      authorization: paystack.data.authorization,
+    });
+
+    // 8. Create order items + update inventory
+    for (const item of orderItems) {
+      await this.orderItem.create({ ...item, order_id: order._id });
+      await this.product.updateOne(
+        { _id: item.product_id },
+        { $inc: { inventory: -item.quantity } }
+      );
     }
-    throw new Error("Payment not successful");
+
+    // 9. Mark order as paid
+    await this.order.updateOne(
+      { _id: order._id },
+      { $set: { paidAt: new Date() } }
+    );
+
+    // 10. Clear cart
+    await this.cart.deleteOne({ _id: cartId });
+    await this.cartItem.deleteMany({ cart_id: cartId });
+
+    return {
+      status: "success",
+      message: paystack.message,
+      data: paystack.data,
+      orderId: order._id.toString(),
+    };
   }
 }
