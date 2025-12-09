@@ -63,8 +63,8 @@ export class UsersService {
     });
   }
 
-  async findAll(): Promise<User[]> {
-    return await this.model.find().sort({ createdAt: -1 });
+  async findAll(): Promise<User[] | null> {
+    return this.model.find().sort({ createdAt: -1 });
   }
 
   async findById(id: string): Promise<User | null> {
@@ -216,4 +216,13 @@ export class UsersService {
 
     return { message: "Password has been reset" };
   }
+
+  async update(query: string, body: any): Promise<User | null> {
+    return await this.model.findOneAndUpdate({ _id: query }, body, {
+      new: true,
+      runValidators: true,
+    });
+  }
+
+
 }
