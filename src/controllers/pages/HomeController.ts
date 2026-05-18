@@ -5,7 +5,6 @@ import { BodyParams, PathParams, QueryParams } from "@tsed/platform-params";
 import { Delete, Get, Post, Security } from "@tsed/schema";
 import slugify from "slugify";
 import { OptionalAuth } from "src/decorators/OptionalAuth.js";
-import { Product } from "src/models/ProductModel.js";
 import { User } from "src/models/UserModel.js";
 import { AddressService } from "src/services/AddressService.js";
 import { CartService } from "src/services/CartService.js";
